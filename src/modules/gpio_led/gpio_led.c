@@ -54,7 +54,6 @@
 #include <uORB/topics/battery_status.h>
 #include <poll.h>
 #include <drivers/drv_gpio.h>
-#include <modules/px4iofirmware/protocol.h>
 
 #if defined(BOARD_HAS_FMU_GPIO) && defined(GPIO_SERVO_1)
 #  define LED_ON_SERVO_GPIO

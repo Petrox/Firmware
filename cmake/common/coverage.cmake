@@ -1,6 +1,6 @@
 ############################################################################
 #
-#   Copyright (c) 2015 PX4 Development Team. All rights reserved.
+# Copyright (c) 2017 PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,54 +31,16 @@
 #
 ############################################################################
 
-set(UAVCAN_USE_CPP03 ON CACHE BOOL "uavcan cpp03")
-set(UAVCAN_PLATFORM stm32 CACHE STRING "uavcan platform")
 
-string(TOUPPER "${OS}" OS_UPPER)
-add_definitions(
-		-DUAVCAN_CPP_VERSION=UAVCAN_CPP03
-		-DUAVCAN_MAX_NETWORK_SIZE_HINT=16
-		-DUAVCAN_MEM_POOL_BLOCK_SIZE=48
-		-DUAVCAN_NO_ASSERTIONS
-		-DUAVCAN_PLATFORM=stm32
-		-DUAVCAN_STM32_${OS_UPPER}=1
-		-DUAVCAN_STM32_NUM_IFACES=1
-		-DUAVCAN_STM32_TIMER_NUMBER=2
-		-DUAVCAN_USE_CPP03=ON
-		-DUAVCAN_USE_EXTERNAL_SNPRINT
-		-DAPP_VERSION_MAJOR=${uavcanblid_sw_version_major}
-		-DAPP_VERSION_MINOR=${uavcanblid_sw_version_minor}
-		-DHW_UAVCAN_NAME=${uavcanblid_name}
-		-DHW_VERSION_MAJOR=${uavcanblid_hw_version_major}
-		-DHW_VERSION_MINOR=${uavcanblid_hw_version_minor}
-		)
+# add code coverage build type
 
-add_subdirectory(../uavcan/libuavcan uavcannode_libuavcan)
-add_dependencies(uavcan platforms__nuttx)
+set(CMAKE_C_FLAGS_COVERAGE "--coverage -ftest-coverage -fprofile-arcs -O0 -g -fno-default-inline -fno-inline"
+        CACHE STRING "Flags used by the C compiler during coverage builds" FORCE)
 
-include_directories(../../drivers/bootloaders/include)
-include_directories(../uavcan/libuavcan/libuavcan/include)
-include_directories(../uavcan/libuavcan/libuavcan/include/dsdlc_generated)
-include_directories(../uavcan/libuavcan/libuavcan_drivers/posix/include)
-include_directories(../uavcan/libuavcan/libuavcan_drivers/stm32/driver/include)
+set(CMAKE_CXX_FLAGS_COVERAGE "--coverage -ftest-coverage -fprofile-arcs -O0 -g -fno-default-inline -fno-inline -fno-elide-constructors"
+        CACHE STRING "Flags used by the C++ compiler during coverage builds" FORCE)
 
-px4_add_module(
-	MODULE modules__uavcannode
-	MAIN uavcannode
-	STACK_MAIN 1048
-	COMPILE_FLAGS
-		-Wframe-larger-than=1500
-		-Wno-deprecated-declarations
-		-O3
-	SRCS
-		uavcannode_main.cpp
-		indication_controller.cpp
-		sim_controller.cpp
-		led.cpp
-		resources.cpp
-		uavcannode_params.c
+set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "--coverage -ftest-coverage -lgcov"
+        CACHE STRING "Flags used for linking binaries during coverage builds" FORCE)
 
-	DEPENDS
-		platforms__common
-		uavcan
-	)
+mark_as_advanced(CMAKE_CXX_FLAGS_COVERAGE CMAKE_C_FLAGS_COVERAGE CMAKE_EXE_LINKER_FLAGS_COVERAGE)

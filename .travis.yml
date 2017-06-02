@@ -104,7 +104,11 @@ after_success:
     fi
   # coveralls code coverage report
   - if [[ "${BUILD_TARGET}" = "tests_coverage" && "${TRAVIS_PULL_REQUEST}" = "false" ]]; then
-         ./Tools/docker_run.sh 'cd build_posix_sitl_default; cpp-coveralls -l ../coverage.info';
+         ./Tools/docker_run.sh 'make coveralls_upload';
+    fi
+  # codecov code coverage report
+  - if [[ "${BUILD_TARGET}" = "tests_coverage" && "${TRAVIS_PULL_REQUEST}" = "false" ]]; then
+         ./Tools/docker_run.sh 'make codecov_upload';
     fi
 
 addons:
